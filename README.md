@@ -12,14 +12,14 @@ Server Info:
 
 Installation:
 - Download and extract your private key file (if any).
-- Move the file into your development environment directory and start the server. 
+- Move the file into your development environment directory and start the server.
 
-1-Log into the virtual machine as root
+1- Log into the virtual machine as root
 ```sh
 $ ssh -i ~/.ssh/key.rsa root@ip
 ```
 
-2-Create a user with sudo permissions
+2- Create a user with sudo permissions
 ```sh
 $ adduser grader
 ```
@@ -48,12 +48,12 @@ $ apt-get upgrade
 
 4- Configure the local timezone to UTC
 ```sh
-$ dpkg-reconfigure tzdata 
+$ dpkg-reconfigure tzdata
 Pick "None of the above" and then "UTC"
 ```
-Use:
+Use "date" to check
 ```sh
-$ date [to check]
+$ date
 ```
 
 ### Securing the Server
@@ -104,4 +104,102 @@ $ sudo ufw status
 $ sudo ufw status verbose
 ```
 
-.....
+### Deploying the application
+
+7-Install and configure Apache to serve a Python mod_wsgi application
+```sh
+$ sudo apt-get install apache2
+$ sudo apt-get install libapache2-mod-wsgi
+$ sudo a2enmod wsgi
+$ sudo service apache2 restart
+```
+Verify if Apache is running with:
+```sh
+$ sudo service apache2 status
+```
+Then, by visiting [http://xx.xxx.xx.xx/] (public ip address) or [http://ec2-xx-xxx-xx-xx.us-west-2.compute.amazonaws.com/]
+
+To configure Apache to handle requests using the WSGI module, edit:
+```sh
+$ sudo nano /etc/apache2/sites-enabled/000-default.conf
+```
+
+Then, restart Apache with:
+```sh
+$ sudo apache2ctl restart
+```
+
+8-Install and configure PostgreSQL
+```sh
+$ sudo apt-get install postgresql postgresql-contrib
+```
+Change to the default PostgresSQL profile "postgres"
+```sh
+$ sudo su - postgres
+# psql
+# CREATE USER catalog WITH PASSWORD 'catalog'
+# CREATE DATABASE catalog WITH OWNER catalog
+# \q
+```
+
+Installing other `packages` & `modules`
+```sh
+$ su user (grader) to log back in as user (grader)
+
+$ sudo apt-get install python-pip
+$ sudo pip install flask
+$ sudo pip install sqlalchemy
+$ sudo apt-get install sqlite3 libsqlite3-dev
+$ sudo pip install oauth2client
+$ sudo pip install requests
+$ sudo pip install httplib2
+```
+
+9-Install git, clone and set up your application directory
+```sh
+$ sudo apt-get install git
+$ cd /var/www
+$ sudo mkdir musicology
+$ cd musicology
+$ sudo git clone https://github.com/user/catalog.git musicology
+$ sudo python database_setup.py
+$ sudo python subgenres.py
+$ sudo python __init__.py
+```
+
+Configure and Enable the New Virtual Host
+```sh
+$ sudo nano /etc/apache2/sites-available/myapp.conf
+$ sudo a2dissite 000-default.conf
+$ sudo a2ensite myapp.conf
+```
+Create a wsgi file corresponding to the WSGIScriptAlias in the ".conf" document
+```sh
+$ sudo nano /var/www/app.wsgi
+```
+
+Write the logic of the application and save it.
+```sh
+$ sudo service apache2 reload
+```
+
+10-The Amazon EC2 Instance's public URL:
+```sh
+http://ec2-35-164-28-52.us-west-2.compute.amazonaws.com/
+```
+
+Localhost:
+```sh
+127.0.0.1
+```
+
+### Sources
+- [Udacity - Configuring Linux Web Servers Course](https://udacity.com/)
+- [StackExchange - SuperUser](http://superuser.com/)
+- [StackExchange - Unix & Linux](http://unix.stackexchange.com/)
+- [Ubuntu Forums](https://ubuntuforums.org/index.php)
+- [Digital Ocean - Community](https://www.digitalocean.com/community/)
+
+License
+----
+MIT Copyright (c) 2016 Sanaba Sangare
