@@ -188,6 +188,17 @@ $ sudo service apache2 reload
 http://ec2-35-164-28-52.us-west-2.compute.amazonaws.com/
 ```
 
+*TIP: for debugging, it's crucial to read and understand the error log during testing*
+
+For example, use:
+```
+$ sudo tail -20 /var/log/apache2/error.log
+```
+or (on Unix systems)
+```
+$ tail -f error_log
+```
+
 Localhost:
 ```sh
 127.0.0.1
