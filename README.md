@@ -6,22 +6,23 @@ This documentation outlines the steps to a baseline installation of a Linux dist
 ### Basic Configuration
 Server Info:
 
-    - IP Address: 35.164.28.52
+    - IP Address: 35.164.245.152
     - SSH Port: 2200
-    - URL: http://ec2-35-164-28-52.us-west-2.compute.amazonaws.com/
+    - URL: http://ec2-35-164-245-152.us-west-2.compute.amazonaws.com/
 
 Installation:
-- Download and extract your private key file (if any).
+- Download and extract your private key file.
 - Move the file into your development environment directory and start the server.
 
 1- Log into the virtual machine as root
 ```sh
-$ ssh -i ~/.ssh/key.rsa root@ip
+$ ssh -i ~/.ssh/id_rsa root@35.164.245.152 -p 2200
 ```
 
 2- Create a user with sudo permissions
 ```sh
-$ adduser grader
+$ adduser grader 
+passwd: 'grader'
 ```
 Grant this user sudo permissions by creating a new file
 ```sh
@@ -82,7 +83,7 @@ $ chmod 644 /home/user/.ssh/authorized_keys
 
 SSH into the server as the new "user" with port 2200
 ```sh
-ssh -i ~/.ssh/key.rsa user@ip -p 2200
+$ ssh -i ~/.ssh/id_rsa grader@35.164.245.152 -p 2200
 ```
 
 Set the UFW to only allow for SSH, HTTP, and NTP
@@ -117,11 +118,34 @@ Verify if Apache is running with:
 ```sh
 $ sudo service apache2 status
 ```
-Then, by visiting [http://xx.xxx.xx.xx/] (public ip address) or [http://ec2-xx-xxx-xx-xx.us-west-2.compute.amazonaws.com/]
+Then, by visiting [http://35.164.245.152/] (public ip address) or [http://ec2-35-164-245-152.us-west-2.compute.amazonaws.com/]
 
 To configure Apache to handle requests using the WSGI module, edit:
 ```sh
 $ sudo nano /etc/apache2/sites-enabled/000-default.conf
+```
+
+Or create a suitable ".conf" file for your application. For example: 
+```
+<VirtualHost *:80>
+                ServerName 35.164.245.152
+                ServerAlias http://ec2-35-164-245-152.us-west-2.compute.amazonaws.com/
+                ServerAdmin admin@35.164.245.152
+
+                WSGIScriptAlias / /var/www/musicology/musicology.wsgi
+                <Directory /var/www/musicology/musicology/>
+                        Order allow,deny
+                        Allow from all
+                </Directory>
+                Alias /static /var/www/musicology/musicology/static
+                <Directory /var/www/musicology/musicology/static/>
+                        Order allow,deny
+                        Allow from all
+                </Directory>
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                LogLevel warn
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
 ```
 
 Then, restart Apache with:
@@ -138,7 +162,7 @@ Change to the default PostgresSQL profile "postgres"
 $ sudo su - postgres
 # psql
 # CREATE USER catalog WITH PASSWORD 'catalog'
-# CREATE DATABASE catalog WITH OWNER catalog
+# CREATE DATABASE musicology WITH OWNER catalog
 # \q
 ```
 
@@ -161,7 +185,7 @@ $ sudo apt-get install git
 $ cd /var/www
 $ sudo mkdir musicology
 $ cd musicology
-$ sudo git clone https://github.com/user/catalog.git musicology
+$ sudo git clone https://github.com/sanabasangare/musicology.git musicology
 $ sudo python database_setup.py
 $ sudo python subgenres.py
 $ sudo python __init__.py
@@ -169,16 +193,28 @@ $ sudo python __init__.py
 
 Configure and Enable the New Virtual Host
 ```sh
-$ sudo nano /etc/apache2/sites-available/myapp.conf
+$ sudo nano /etc/apache2/sites-available/musicology.conf
 $ sudo a2dissite 000-default.conf
-$ sudo a2ensite myapp.conf
+$ sudo a2ensite musicology.conf
 ```
 Create a wsgi file corresponding to the WSGIScriptAlias in the ".conf" document
 ```sh
 $ sudo nano /var/www/app.wsgi
 ```
 
-Write the logic of the application and save it.
+The application logic should look similar to this:
+```
+#!/usr/bin/python
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0, "/var/www/musicology/musicology/")
+
+from __init__ import app as application
+application.secret_key = 'your_secret_key'
+```
+
+Reload apache to apply the changes.
 ```sh
 $ sudo service apache2 reload
 ```
@@ -206,8 +242,9 @@ Localhost:
 
 ### Sources
 - [Udacity - Configuring Linux Web Servers Course](https://udacity.com/)
-- [StackExchange - SuperUser](http://superuser.com/)
 - [StackExchange - Unix & Linux](http://unix.stackexchange.com/)
+- [StackExchange - SuperUser](http://superuser.com/)
+- [Software Engineering Stack Exchange](http://softwareengineering.stackexchange.com/)
 - [Ubuntu Forums](https://ubuntuforums.org/index.php)
 - [Digital Ocean - Community](https://www.digitalocean.com/community/)
 
