@@ -16,7 +16,7 @@ Installation:
 
 1- Log into the virtual machine as root
 ```sh
-$ ssh -i ~/.ssh/id_rsa root@35.164.245.152 -p 2200
+$ ssh -i ~/.ssh/id_rsa root@35.164.245.152
 ```
 
 2- Create a user with sudo permissions
@@ -199,7 +199,7 @@ $ sudo a2ensite musicology.conf
 ```
 Create a wsgi file corresponding to the WSGIScriptAlias in the ".conf" document
 ```sh
-$ sudo nano /var/www/app.wsgi
+$ sudo nano /var/www/musicology/musicology.wsgi
 ```
 
 The application logic should look similar to this:
