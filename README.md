@@ -79,6 +79,30 @@ $ chown grader:grader /home/user/.ssh/authorized_keys
 $ chmod 644 /home/user/.ssh/authorized_keys
 ```
 
+To create a new SSH RSA key pair
+```
+$ ssh-keygen -t rsa
+(follow the steps to generate key)
+```
+
+From a local machine, copy the public SSH key to remote server
+```
+$ ssh-copy-id user@remote_ip
+```
+
+*Alternatively, this command should work:*
+```
+cat ~/.ssh/id_rsa.pub | ssh user@123.45.56.78 "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"
+```
+
+To disable root login and enforce Key-based SSH authentication, edit these lines in the '/etc/ssh/sshd_config' file:
+```
+PermitRootLogin no
+
+PasswordAuthentication no
+```
+*Use 'service ssh restart' for the changes to take effect*
+
 6- Configure the Uncomplicated Firewall (UFW)
 
 SSH into the server as the new "user" with port 2200
