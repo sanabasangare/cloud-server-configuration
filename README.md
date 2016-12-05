@@ -22,7 +22,7 @@ $ ssh -i ~/.ssh/id_rsa root@35.164.245.152
 2- Create a user with sudo permissions
 ```sh
 $ adduser grader 
-passwd: 'grader'
+passwd: 'SJTk#tx&@j5Z5anh'
 ```
 Grant this user sudo permissions by creating a new file
 ```sh
