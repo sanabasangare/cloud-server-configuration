@@ -10,6 +10,8 @@ Server Info:
     - SSH Port: 2200
     - URL: http://ec2-35-164-245-152.us-west-2.compute.amazonaws.com/
 
+*Please note that the server URLs used here will not be running after the software testing is completed.*
+
 Installation:
 - Download and extract your private key file.
 - Move the file into your development environment directory and start the server.
@@ -203,6 +205,20 @@ $ sudo pip install requests
 $ sudo pip install httplib2
 ```
 
+Other useful `packages` used:
+- [Unattended Upgrades](https://wiki.debian.org/UnattendedUpgrades)
+```
+This keeps the server current with the latest security (and other) updates automatically
+```
+- [Fail2ban](http://www.fail2ban.org/wiki/index.php/Main_Page)
+```
+Bans IPs that show the malicious signs (too many password failures, seeking for exploits, etc ...)
+```
+- [Glances](https://pypi.python.org/pypi/Glances)
+```
+A cross-platform monitoring tool
+```
+
 9-Install git, clone and set up your application directory
 ```sh
 $ sudo apt-get install git
@@ -264,7 +280,7 @@ Localhost:
 127.0.0.1
 ```
 
-### Sources
+### Resources
 - [Udacity - Configuring Linux Web Servers Course](https://udacity.com/)
 - [StackExchange - Unix & Linux](http://unix.stackexchange.com/)
 - [StackExchange - SuperUser](http://superuser.com/)
